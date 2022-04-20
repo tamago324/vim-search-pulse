@@ -1,5 +1,10 @@
 # The vim search pulse plugin: easily locate the cursor after a search
 
+## もとの実装との差
+
+* `search_pulse#Pulse([{force}])`
+  * force に true を渡すと同じ行のときにも光るようになる
+
 ## Description
 
 When you perform a search, the cursor jumps to the closest match. It's often

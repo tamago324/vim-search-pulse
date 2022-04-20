@@ -69,7 +69,10 @@ func! search_pulse#PulseFirst()
   return "\<cr>"
 endf
 
-func! search_pulse#Pulse()
+func! search_pulse#Pulse(...)
+  " force を追加
+  let l:force = get(a:000, 0, v:false) 
+
   if get(g:, 'vim_search_pulse_disable') != 0
     return
   endif
@@ -82,7 +85,7 @@ func! search_pulse#Pulse()
   if g:vim_search_pulse_mode == 'pattern'
     call search_pulse#PulsePattern()
   elseif g:vim_search_pulse_mode == 'cursor_line'
-    call search_pulse#PulseCursorLine()
+    call search_pulse#PulseCursorLine(l:force)
   endif
   if has('patch-7.3.438')
     silent doautocmd <nomodeline> User PostPulse
@@ -118,11 +121,11 @@ func! search_pulse#PulsePattern()
   endfor
 endf
 
-func! search_pulse#PulseCursorLine()
+func! search_pulse#PulseCursorLine(force)
   if s:IsLineTooLong()
     return
   endif
-  if s:IsPatternOnTheSameLine()
+  if !a:force && s:IsPatternOnTheSameLine()
     return
   endif
 
@@ -130,7 +133,9 @@ func! search_pulse#PulseCursorLine()
 
   " Save the line we are on to avoid pulsing the same line if pattern is on
   " the same line.
-  let s:old_line = line('.')
+  if !a:force
+    let s:old_line = line('.')
+  endif
 
   " Saves user defined cursorline opt.
   " If disabled, we locally enabled it during the pulse.
